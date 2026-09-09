@@ -1,0 +1,34 @@
+from datetime import datetime, timezone
+
+from app import db
+
+
+class Analysis(db.Model):
+    __tablename__ = "analyses"
+
+    id = db.Column(db.Integer, primary_key=True)
+    location_id = db.Column(db.Integer, db.ForeignKey("locations.id"), nullable=False)
+    date_from = db.Column(db.Date, nullable=False)
+    date_to = db.Column(db.Date, nullable=False)
+    max_cloud_percentage = db.Column(db.Float, nullable=False)
+    satellite_date = db.Column(db.Date, nullable=True)
+    mean_ndvi = db.Column(db.Float, nullable=True)
+    mean_ndwi = db.Column(db.Float, nullable=True)
+    status = db.Column(db.String(20), nullable=False, default="PENDING")
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+
+    location = db.relationship("Location", back_populates="analyses")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "location_id": self.location_id,
+            "date_from": self.date_from.isoformat(),
+            "date_to": self.date_to.isoformat(),
+            "max_cloud_percentage": self.max_cloud_percentage,
+            "satellite_date": self.satellite_date.isoformat() if self.satellite_date else None,
+            "mean_ndvi": self.mean_ndvi,
+            "mean_ndwi": self.mean_ndwi,
+            "status": self.status,
+            "created_at": self.created_at.isoformat(),
+        }

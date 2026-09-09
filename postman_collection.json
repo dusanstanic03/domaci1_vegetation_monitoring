@@ -1,0 +1,136 @@
+{
+  "info": {
+    "name": "Vegetation Monitoring API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "item": [
+        {
+          "name": "Create Location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kosmaj test area\",\n  \"min_lat\": 44.45,\n  \"min_lon\": 20.55,\n  \"max_lat\": 44.46,\n  \"max_lon\": 20.56\n}"
+            },
+            "url": "{{base_url}}/api/locations"
+          }
+        },
+        {
+          "name": "Get Locations",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/locations"
+          }
+        },
+        {
+          "name": "Get Location",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/locations/1"
+          }
+        },
+        {
+          "name": "Update Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kosmaj updated area\",\n  \"min_lat\": 44.45,\n  \"min_lon\": 20.55,\n  \"max_lat\": 44.47,\n  \"max_lon\": 20.57\n}"
+            },
+            "url": "{{base_url}}/api/locations/1"
+          }
+        },
+        {
+          "name": "Delete Location",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/locations/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analyses",
+      "item": [
+        {
+          "name": "Create Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location_id\": 1,\n  \"date_from\": \"2026-08-01\",\n  \"date_to\": \"2026-08-15\",\n  \"max_cloud_percentage\": 20\n}"
+            },
+            "url": "{{base_url}}/api/analyses"
+          }
+        },
+        {
+          "name": "Get Analyses",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/analyses"
+          }
+        },
+        {
+          "name": "Filter Analyses",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/analyses?location_id=1&status=COMPLETED"
+          }
+        },
+        {
+          "name": "Get Analysis",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/analyses/1"
+          }
+        },
+        {
+          "name": "Delete Analysis",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/analyses/1"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000"
+    }
+  ]
+}
