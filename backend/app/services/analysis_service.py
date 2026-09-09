@@ -85,11 +85,11 @@ class AnalysisService:
                 validated["date_to"],
                 validated["max_cloud_percentage"],
             )
-            ndvi = VegetationIndexService.calculate_ndvi(bands["B04"], bands["B08"])
-            ndwi = VegetationIndexService.calculate_ndwi(bands["B03"], bands["B08"])
+            ndvi = VegetationAndWaterIndexService.calculate_ndvi(bands["B04"], bands["B08"])
+            ndwi = VegetationAndWaterIndexService.calculate_ndwi(bands["B03"], bands["B08"])
 
-            analysis.mean_ndvi = VegetationIndexService.mean_index(ndvi)
-            analysis.mean_ndwi = VegetationIndexService.mean_index(ndwi)
+            analysis.mean_ndvi = VegetationAndWaterIndexService.mean_index(ndvi)
+            analysis.mean_ndwi = VegetationAndWaterIndexService.mean_index(ndwi)
             analysis.satellite_date = bands.get("satellite_date")
             analysis.status = "COMPLETED"
         except Exception:

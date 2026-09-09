@@ -14,6 +14,10 @@ class Location(db.Model):
     max_lon = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
+    analyses = db.relationship(
+        "Analysis", back_populates="location", cascade="all, delete-orphan"
+    )
+
     def to_dict(self):
         return {
             "id": self.id,

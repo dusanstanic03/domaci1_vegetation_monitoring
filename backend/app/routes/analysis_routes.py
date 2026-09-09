@@ -10,6 +10,34 @@ analysis_bp = Blueprint("analyses", __name__, url_prefix="/api/analyses")
 
 @analysis_bp.post("")
 def create_analysis():
+    """Create and run an analysis for a location.
+
+    Fetches Sentinel-2 bands from Copernicus for the given date range and cloud
+    threshold, then computes mean NDVI and NDWI. The returned analysis carries a
+    ``status`` of ``COMPLETED`` or ``FAILED`` depending on the imagery fetch.
+    ---
+    tags:
+      - Analyses
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/AnalysisInput'
+    responses:
+      201:
+        description: Analysis created (check ``status`` for the outcome)
+        schema:
+          $ref: '#/definitions/Analysis'
+      400:
+        description: Validation error
+        schema:
+          $ref: '#/definitions/Error'
+      404:
+        description: Location not found
+        schema:
+          $ref: '#/definitions/Error'
+    """
     analysis, error, status_code = AnalysisService.create_analysis(request.get_json(silent=True))
     if error:
         return {"error": error}, status_code
@@ -19,6 +47,49 @@ def create_analysis():
 
 @analysis_bp.get("")
 def get_analyses():
+    """List analyses, newest first, with optional filters.
+    ---
+    tags:
+      - Analyses
+    parameters:
+      - in: query
+        name: location_id
+        type: integer
+        required: false
+        description: Only analyses for this location
+      - in: query
+        name: status
+        type: string
+        required: false
+        enum: [PENDING, PROCESSING, COMPLETED, FAILED]
+        description: Only analyses with this status (case-insensitive)
+      - in: query
+        name: date_from
+        type: string
+        format: date
+        required: false
+        description: Only analyses whose ``date_from`` is on or after this date (YYYY-MM-DD)
+      - in: query
+        name: date_to
+        type: string
+        format: date
+        required: false
+        description: Only analyses whose ``date_to`` is on or before this date (YYYY-MM-DD)
+    responses:
+      200:
+        description: List of analyses
+        schema:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/definitions/Analysis'
+      400:
+        description: Invalid filter value
+        schema:
+          $ref: '#/definitions/Error'
+    """
     try:
         analyses = AnalysisService.get_filtered_analyses(request.args)
     except ValueError as exc:
@@ -29,6 +100,25 @@ def get_analyses():
 
 @analysis_bp.get("/<int:analysis_id>")
 def get_analysis(analysis_id):
+    """Get a single analysis by id.
+    ---
+    tags:
+      - Analyses
+    parameters:
+      - in: path
+        name: analysis_id
+        required: true
+        type: integer
+    responses:
+      200:
+        description: The analysis
+        schema:
+          $ref: '#/definitions/Analysis'
+      404:
+        description: Analysis not found
+        schema:
+          $ref: '#/definitions/Error'
+    """
     analysis = db.session.get(Analysis, analysis_id)
     if not analysis:
         return {"error": "Analysis not found"}, 404
@@ -38,6 +128,23 @@ def get_analysis(analysis_id):
 
 @analysis_bp.delete("/<int:analysis_id>")
 def delete_analysis(analysis_id):
+    """Delete an analysis.
+    ---
+    tags:
+      - Analyses
+    parameters:
+      - in: path
+        name: analysis_id
+        required: true
+        type: integer
+    responses:
+      204:
+        description: Analysis deleted
+      404:
+        description: Analysis not found
+        schema:
+          $ref: '#/definitions/Error'
+    """
     analysis = db.session.get(Analysis, analysis_id)
     if not analysis:
         return {"error": "Analysis not found"}, 404
